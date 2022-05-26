@@ -26,7 +26,7 @@ pub contract MetaPandaAirdropNFT: NonFungibleToken {
     pub event ContractInitialized()
     pub event Withdraw(id: UInt64, from: Address?)
     pub event Deposit(id: UInt64, to: Address?)
-    pub event Minted(metadata: MetaPandaAirdropNFTView)
+    pub event Minted(metadata: MetaPandaAirdropView)
     pub event Transfer(id: UInt64, from: Address?, to: Address?)
     pub event Burned(id: UInt64, address: Address?)
 
@@ -34,7 +34,7 @@ pub contract MetaPandaAirdropNFT: NonFungibleToken {
     pub let CollectionPublicPath: PublicPath
     pub let MinterStoragePath: StoragePath
 
-    pub struct MetaPandaAirdropNFTView {
+    pub struct MetaPandaAirdropView {
         pub let uuid: UInt64
         pub let id: UInt64
         pub let nftType: String
@@ -57,8 +57,8 @@ pub contract MetaPandaAirdropNFT: NonFungibleToken {
     pub resource NFT: NonFungibleToken.INFT, MetadataViews.Resolver {
         pub let id: UInt64
         pub let nftType: String
-        pub let metadata: {String:String}
-        pub let file: AnyStruct{MetadataViews.File}
+        access(self) let file: AnyStruct{MetadataViews.File}
+        access(self) let metadata: {String:String}
         access(self) let royalties: [MetadataViews.Royalty]
 
         init(
@@ -74,7 +74,7 @@ pub contract MetaPandaAirdropNFT: NonFungibleToken {
             self.royalties = royalties
 
             emit Minted(
-                metadata: MetaPandaAirdropNFT.MetaPandaAirdropNFTView(
+                metadata: MetaPandaAirdropNFT.MetaPandaAirdropView(
                     uuid: self.uuid,
                     id: self.id,
                     nftType: self.nftType,
@@ -88,7 +88,7 @@ pub contract MetaPandaAirdropNFT: NonFungibleToken {
     
         pub fun getViews(): [Type] {
             return [
-                Type<MetaPandaAirdropNFTView>(),
+                Type<MetaPandaAirdropView>(),
                 Type<MetadataViews.Display>(),
                 Type<MetadataViews.Royalties>(),
                 Type<MetadataViews.ExternalURL>(),
@@ -107,8 +107,8 @@ pub contract MetaPandaAirdropNFT: NonFungibleToken {
                         thumbnail: self.file
                     )
 
-                case Type<MetaPandaAirdropNFTView>():
-                    return MetaPandaAirdropNFTView(
+                case Type<MetaPandaAirdropView>():
+                    return MetaPandaAirdropView(
                         uuid: self.uuid,
                         id: self.id,
                         nftType: self.nftType,

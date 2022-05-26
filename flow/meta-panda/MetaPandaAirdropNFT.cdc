@@ -26,7 +26,7 @@ pub contract MetaPandaAirdropNFT: NonFungibleToken {
     pub event ContractInitialized()
     pub event Withdraw(id: UInt64, from: Address?)
     pub event Deposit(id: UInt64, to: Address?)
-    pub event Minted(metadata: MetaPandaAirdropView)
+    pub event Minted(id: UInt64, nftType: String, metadata: {String:String})
     pub event Transfer(id: UInt64, from: Address?, to: Address?)
     pub event Burned(id: UInt64, address: Address?)
 
@@ -38,7 +38,8 @@ pub contract MetaPandaAirdropNFT: NonFungibleToken {
         pub let uuid: UInt64
         pub let id: UInt64
         pub let nftType: String
-        pub let metadata: {String:String}
+        pub let file: AnyStruct{MetadataViews.File}
+        access(self) let metadata: {String:String}
 
         init(
             uuid: UInt64,
@@ -51,13 +52,18 @@ pub contract MetaPandaAirdropNFT: NonFungibleToken {
             self.id = id
             self.nftType = nftType
             self.metadata = metadata
+            self.file = file
+        }
+
+        pub fun getMetadata(): {String:String} {
+            return self.metadata
         }
     }
 
     pub resource NFT: NonFungibleToken.INFT, MetadataViews.Resolver {
         pub let id: UInt64
         pub let nftType: String
-        pub let let file: AnyStruct{MetadataViews.File}
+        pub let file: AnyStruct{MetadataViews.File}
         access(self) let metadata: {String:String}
         access(self) let royalties: [MetadataViews.Royalty]
 
@@ -74,13 +80,9 @@ pub contract MetaPandaAirdropNFT: NonFungibleToken {
             self.royalties = royalties
 
             emit Minted(
-                metadata: MetaPandaAirdropNFT.MetaPandaAirdropView(
-                    uuid: self.uuid,
-                    id: self.id,
-                    nftType: self.nftType,
-                    metadata: self.metadata,
-                    file: file
-                )
+                id: self.id,
+                nftType: self.nftType,
+                metadata: self.metadata
             )
 
             MetaPandaAirdropNFT.totalSupply = MetaPandaAirdropNFT.totalSupply + 1

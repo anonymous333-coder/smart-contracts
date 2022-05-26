@@ -57,7 +57,7 @@ pub contract MetaPandaAirdropNFT: NonFungibleToken {
     pub resource NFT: NonFungibleToken.INFT, MetadataViews.Resolver {
         pub let id: UInt64
         pub let nftType: String
-        access(self) let file: AnyStruct{MetadataViews.File}
+        pub let let file: AnyStruct{MetadataViews.File}
         access(self) let metadata: {String:String}
         access(self) let royalties: [MetadataViews.Royalty]
 
